@@ -26,7 +26,7 @@ def main():
     else:
         src_address = args.src  # Get the IP address supplied as command-line argument
     if args.gw:
-        gtwy = sr1(IP(dst='8.8.8.8', ttl=0))
+        gtwy = sr1(IP(dst='8.8.8.8', ttl=1))
         gateway_address = gtwy.src
     pkt = Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(op=2)/IP(src=src_address, dst=args.target)
     gtwy_pkt = None
